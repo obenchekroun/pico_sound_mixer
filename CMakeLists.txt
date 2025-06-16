@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 
 # Needs to be done before including SDK pico
 # https://forums.raspberrypi.com/viewtopic.php?t=376508
-set(PICO_BOARD pico_w)
+set(PICO_BOARD pico)
 set(PICO_PLATFORM rp2040)
 
 # Include the Pico SDK initialization script
