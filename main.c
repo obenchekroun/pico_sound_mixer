@@ -34,7 +34,7 @@ bi_decl(bi_3pins_with_names(PICO_AUDIO_I2S_DATA_PIN, "I2S DIN", PICO_AUDIO_I2S_C
 // defines
 #define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
 // number of concurrent sounds that can be played out
-#define NUM_VOICES 8
+#define NUM_VOICES 1
 #define LED_PIN 12
 #define LED_ON gpio_put(LED_PIN, 1)
 #define LED_OFF gpio_put(LED_PIN, 0)
@@ -121,11 +121,11 @@ const int sound_array_len[21] = {
 
 // map the buttons to particular sounds
 // (it is OK to have multiple buttons mapped to the same sound if desired)
-const int button_sound_map[8] = {CAT1, COW1, DOG1, GOAT1, HEN1, ROOSTER1, SNAKE1, WOLF1};
+const int button_sound_map[10] = {CAT1, CAT2, DOG1, GOAT1, HEN1, ROOSTER1, SNAKE1, WOLF1, CAT1, CAT2};
 
 // button array
 // GPIO numbers
-const uint button_gpio[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+const uint button_gpio[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
 #define SAMPLES_PER_BUFFER 256
 
@@ -207,7 +207,7 @@ uint8_t get_button_level(void) {
         }
     }
     if (button_level != 0) {
-        // printf("get_button_level: %02x, last_button_state: %02x\n", button_level, last_button_state);
+        printf("get_button_level: %02x, last_button_state: %02x\n", button_level, last_button_state);
     }
     return button_level;
 }
@@ -218,7 +218,7 @@ uint8_t get_new_button_press(void) {
     uint8_t button_press = button_state & ~last_button_state;
     last_button_state = button_state;
     if (button_state != 0) {
-        // printf("get_new_button_press: %02x\n", button_press);
+        printf("get_new_button_press: %02x\n", button_press);
     }
     return button_press;
 }
