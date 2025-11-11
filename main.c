@@ -34,7 +34,7 @@ bi_decl(bi_3pins_with_names(PICO_AUDIO_I2S_DATA_PIN, "I2S DIN", PICO_AUDIO_I2S_C
 // defines
 #define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
 // number of concurrent sounds that can be played out
-#define NUM_VOICES 1
+#define NUM_VOICES 4
 #define LED_PIN 12
 #define LED_ON gpio_put(LED_PIN, 1)
 #define LED_OFF gpio_put(LED_PIN, 0)
@@ -121,7 +121,7 @@ const int sound_array_len[21] = {
 
 // map the buttons to particular sounds
 // (it is OK to have multiple buttons mapped to the same sound if desired)
-const int button_sound_map[10] = {CAT1, COW1, DOG1, GOAT1, HEN1, ROOSTER1, PIG1, SHEEP1, SNAKE2, WOLF1};
+const int button_sound_map[10] = {CAT1, COW1, DOG1, GOAT1, HEN1, ROOSTER1, PIG1, SHEEP1, SNAKE1, WOLF1};
 
 // button array
 // GPIO numbers
