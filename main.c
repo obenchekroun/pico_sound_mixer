@@ -121,7 +121,7 @@ const int sound_array_len[21] = {
 
 // map the buttons to particular sounds
 // (it is OK to have multiple buttons mapped to the same sound if desired)
-const int button_sound_map[10] = {CAT1, CAT2, DOG1, GOAT1, HEN1, ROOSTER1, SNAKE1, WOLF1, CAT1, CAT2};
+const int button_sound_map[10] = {CAT1, COW1, DOG1, GOAT1, HEN1, ROOSTER1, PIG1, SHEEP1, SNAKE2, WOLF1};
 
 // button array
 // GPIO numbers
@@ -130,7 +130,7 @@ const uint button_gpio[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 #define SAMPLES_PER_BUFFER 256
 
 // ******** global variables ********
-uint8_t last_button_state = 0;
+uint16_t last_button_state = 0;
 // the voice_sound_index array stores a value from 0 to 20, which is the sound array index
 // a value of -1 means the voice is not playing.
 int voice_sound_index[NUM_VOICES];
@@ -180,7 +180,7 @@ struct audio_buffer_pool *init_audio() {
 void board_init(void) {
     int i;
     // setup buttons
-    for (i=0; i<8; i++) {
+    for (i=0; i<10; i++) {
         gpio_init(button_gpio[i]);
         gpio_set_dir(button_gpio[i], GPIO_IN);
         gpio_pull_up(button_gpio[i]); // pullup enabled
@@ -198,10 +198,10 @@ void board_init(void) {
 }
 
 // returns a byte with the current button level (1 = pressed)
-uint8_t get_button_level(void) {
-    uint8_t button_level = 0;
+uint16_t get_button_level(void) {
+    uint16_t button_level = 0;
     int i;
-    for (i=0; i<8; i++) {
+    for (i=0; i<10; i++) {
         if (gpio_get(button_gpio[i]) == false) { // button is pressed!
             button_level |= (1<<i);
         }
@@ -213,9 +213,9 @@ uint8_t get_button_level(void) {
 }
 
 // returns a byte with only new pressed buttons (1 = pressed)
-uint8_t get_new_button_press(void) {
-    uint8_t button_state = get_button_level();
-    uint8_t button_press = button_state & ~last_button_state;
+uint16_t get_new_button_press(void) {
+    uint16_t button_state = get_button_level();
+    uint16_t button_press = button_state & ~last_button_state;
     last_button_state = button_state;
     if (button_state != 0) {
         printf("get_new_button_press: %02x\n", button_press);
@@ -224,7 +224,7 @@ uint8_t get_new_button_press(void) {
 }
 
 int main() {
-    uint8_t buttons;
+    uint16_t buttons;
     int j;
 #if PICO_ON_DEVICE
 #if USE_AUDIO_PWM
@@ -245,7 +245,7 @@ int main() {
         buttons = get_new_button_press();
         if (buttons) {
             // a button has been pressed
-            for (j=0; j<8; j++) {
+            for (j=0; j<10; j++) {
                 if (buttons & (1<<j)) {
                     // a button has been pressed
                     LED_ON;
