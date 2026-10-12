@@ -1,2 +1,4 @@
 .DS_Store
 build/
+wav_convert/output/*.c
+wav_convert/output/*.h

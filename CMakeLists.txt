@@ -27,27 +27,6 @@ file(GLOB sounds_SRC
 add_executable(${PROJECT_NAME}
         main.c
         ${sounds_SRC}
-        # cat1.c
-        # cat2.c
-        # cow1.c
-        # cow2.c
-        # cow3.c
-        # dog1.c
-        # dog2.c
-        # goat1.c
-        # goat2.c
-        # hen1.c
-        # hen2.c
-        # pig1.c
-        # pig2.c
-        # rooster1.c
-        # sheep1.c
-        # sheep2.c
-        # snake1.c
-        # snake2.c
-        # snake3.c
-        # wolf1.c
-        # wolf2.c
         )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
