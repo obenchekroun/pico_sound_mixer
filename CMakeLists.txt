@@ -39,6 +39,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 set(my_lib
      pico_stdlib
      pico_audio_i2s
+     pico_rand
 )
 
 target_link_libraries(${PROJECT_NAME} ${my_lib})

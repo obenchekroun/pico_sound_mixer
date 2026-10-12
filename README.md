@@ -14,7 +14,7 @@ The sounds are stored in flash as C arrays, generated from `.wav` files by `wav_
    ```
 
    This writes one `.c` per sound, plus `sounds/sounds.h` (the `enum sound_id` with `CAT1`, `COW1`... and the extern declarations) and `sounds/sounds_table.c` (the `sound_array[]` and `sound_array_len[]` tables). Remove the `.c` of any sound you deleted.
-3. Map buttons to sounds in `button_sound_map[]` in `main.c`, using the enum names.
+3. Map buttons to sounds in `button_sound_map[]` in `main.c`, using the enum names. Each button lists 1 to `MAX_VARIANTS` variants of the same animal.
 4. Rebuild. `CMakeLists.txt` picks up every `.c` in `sounds/` automatically.
 
 Without `-o`, the script writes into `wav_convert/output/` so you can inspect the result first.
@@ -36,3 +36,4 @@ In `main.c`:
 - `NUM_VOICES`: number of simultaneous sounds. When all voices are busy, a new press steals the oldest one.
 - `MIX_SHIFT`: per-voice attenuation in bits (1 = -6 dB, 2 = -12 dB). The mix is accumulated in 32 bits and clipped.
 - `DEBOUNCE_LOOPS`: button lockout after an edge, in main-loop iterations of about 10.7 ms.
+- `RANDOM_VARIANT`: 1 = each press picks a random variant of the button's animal, never the same twice in a row. 0 = always the first variant listed.

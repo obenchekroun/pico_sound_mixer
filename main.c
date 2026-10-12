@@ -22,6 +22,7 @@
 #include "hardware/structs/clocks.h"
 #endif
 #include "pico/stdlib.h"
+#include "pico/rand.h"
 #if USE_AUDIO_I2S
 #include "pico/audio_i2s.h"
 #if PICO_ON_DEVICE
@@ -42,6 +43,11 @@ bi_decl(bi_3pins_with_names(PICO_AUDIO_I2S_DATA_PIN, "I2S DIN", PICO_AUDIO_I2S_C
 // after a button edge, ignore that button for this many main-loop iterations
 // one iteration is SAMPLES_PER_BUFFER / 24000 s, about 10.7 ms, so 3 is about 32 ms
 #define DEBOUNCE_LOOPS 3
+// 1 = each press picks a random variant of the animal (never the same as the previous press)
+// 0 = each press always plays the first variant listed for the button
+#define RANDOM_VARIANT 1
+// max number of variants per button in button_sound_map
+#define MAX_VARIANTS 3
 #define LED_PIN 12
 #define LED_ON gpio_put(LED_PIN, 1)
 #define LED_OFF gpio_put(LED_PIN, 0)
@@ -54,9 +60,26 @@ bi_decl(bi_3pins_with_names(PICO_AUDIO_I2S_DATA_PIN, "I2S DIN", PICO_AUDIO_I2S_C
 //   sound_array_len[]  number of samples in each array
 #include "sounds/sounds.h"
 
-// map the buttons to particular sounds
+// map the buttons to sounds: each button has 1 to MAX_VARIANTS variants
+// with RANDOM_VARIANT 0 only the first variant is used
 // (it is OK to have multiple buttons mapped to the same sound if desired)
-const int button_sound_map[NUM_BUTTONS] = {CAT1, COW1, DOG1, GOAT1, HEN1, ROOSTER1, PIG1, SHEEP1, SNAKE1, WOLF1};
+typedef struct {
+    uint8_t count;
+    enum sound_id sounds[MAX_VARIANTS];
+} button_sounds_t;
+
+const button_sounds_t button_sound_map[NUM_BUTTONS] = {
+    {2, {CAT1, CAT2}},             /* button 0, GP0 */
+    {3, {COW1, COW2, COW3}},       /* button 1, GP1 */
+    {2, {DOG1, DOG2}},             /* button 2, GP2 */
+    {2, {GOAT1, GOAT2}},           /* button 3, GP3 */
+    {2, {HEN1, HEN2}},             /* button 4, GP4 */
+    {1, {ROOSTER1}},               /* button 5, GP5 */
+    {2, {PIG1, PIG2}},             /* button 6, GP6 */
+    {2, {SHEEP1, SHEEP2}},         /* button 7, GP7 */
+    {3, {SNAKE1, SNAKE2, SNAKE3}}, /* button 8, GP8 */
+    {2, {WOLF1, WOLF2}},           /* button 9, GP9 */
+};
 
 // button array
 // GPIO numbers
@@ -198,6 +221,24 @@ void trigger_sound(int sound) {
     voices[target].started = voice_trigger_counter++;
 }
 
+// pick which variant of a button to play
+int pick_variant(int button) {
+    const button_sounds_t *b = &button_sound_map[button];
+#if RANDOM_VARIANT
+    static uint8_t last_variant[NUM_BUTTONS];
+    if (b->count > 1) {
+        // random index among the other variants, so the same one never plays twice in a row
+        uint8_t v = (uint8_t)(get_rand_32() % (b->count - 1));
+        if (v >= last_variant[button]) {
+            v++;
+        }
+        last_variant[button] = v;
+        return b->sounds[v];
+    }
+#endif
+    return b->sounds[0];
+}
+
 int main() {
     uint16_t buttons;
     int j;
@@ -221,7 +262,7 @@ int main() {
             printf("button press: %03x\n", buttons);
             for (j=0; j<NUM_BUTTONS; j++) {
                 if (buttons & (1<<j)) {
-                    trigger_sound(button_sound_map[j]);
+                    trigger_sound(pick_variant(j));
                 }
             }
         }
